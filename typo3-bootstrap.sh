@@ -54,6 +54,7 @@ read -p "Do you want to create a basic extension? (y/n): " CREATE_EXT
 
 if [[ "$CREATE_EXT" =~ ^[Yy]$ ]]; then
   read -p "Enter extension name (no spaces): " EXT_NAME
+  read -p "Enter extension vendor name (no spaces): " EXT_VENDOR
   read -p "Enter extension key (EXT_KEY, e.g. 'myext'): " EXT_KEY
   read -p "Enter extension description: " EXT_DESC
   read -p "Enter extension author full name: " EXT_AUTHOR_FULLNAME
@@ -70,7 +71,7 @@ if [[ "$CREATE_EXT" =~ ^[Yy]$ ]]; then
   HOMEPAGE=$(echo "$PROJECT" | tr '[:upper:]' '[:lower:]')
   cat <<EOF >"packages/$EXT_NAME/composer.json"
 {
-  "name": "hotbytes/$EXT_NAME",
+  "name": "$EXT_VENDOR/$EXT_NAME",
   "description": "$EXT_DESC",
   "type": "typo3-cms-extension",
   "authors": [
