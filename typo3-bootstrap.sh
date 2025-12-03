@@ -22,15 +22,19 @@ if ! command -v jq &>/dev/null; then
 fi
 
 # --- PROJECT SETUP ---
-read -p "Enter TYPO3 project name: " PROJECT
-if [ -d "$PROJECT" ]; then
-  read -p "Directory '$PROJECT' already exists. Overwrite? (y/n): " OVERWRITE
-  [[ "$OVERWRITE" =~ ^[Yy]$ ]] || {
-    echo "Aborted."
-    exit 1
-  }
-  rm -rf "$PROJECT"
-fi
+while true; do
+  read -p "Enter TYPO3 project name: " PROJECT
+  if [ -z "$PROJECT" ]; then
+    echo "Project name cannot be empty."
+    continue
+  fi
+  if [ -d "$PROJECT" ]; then
+    echo "A project named '$PROJECT' already exists. Please choose a different name."
+  else
+    break
+  fi
+done
+
 mkdir "$PROJECT" && cd "$PROJECT"
 
 echo -e "${GREEN}Configuring DDEV for TYPO3...${RESET}"
