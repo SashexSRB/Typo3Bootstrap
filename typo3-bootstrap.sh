@@ -1,10 +1,6 @@
 #!/usr/bin/env bash
 set -e
 
-# @TODO: Replace the TypoScript directory with Site Set directory, Legacy TypoScript loading won't be supported in v14 or v15.
-# @TODO: Add logic to create the Site Set structure and config.yaml
-# @TODO: Remove redundant files from being created.
-
 # --- COLORS ---
 GREEN="\033[1;32m"
 YELLOW="\033[1;33m"
@@ -53,21 +49,21 @@ ddev typo3 setup --server-type=other --driver=mysqli --host=db --port=3306 --dbn
 read -p "Do you want to create a basic extension? (y/n): " CREATE_EXT
 
 if [[ "$CREATE_EXT" =~ ^[Yy]$ ]]; then
-  read -p "Enter extension name (no spaces): " EXT_NAME
+  read -p "Enter extension name (no spaces, snake case! e.g. 'site_package'): " EXT_NAME
   read -p "Enter extension vendor name (no spaces): " EXT_VENDOR
   read -p "Enter extension key (EXT_KEY, e.g. 'myext'): " EXT_KEY
   read -p "Enter extension description: " EXT_DESC
-  read -p "Enter extension author full name: " EXT_AUTHOR_FULLNAME
-  read -p "Enter extension author E-Mail: " EXT_AUTHOR_EMAIL
-  read -p "Enter TypoScript displayed name: " TS_DISPLAYED_NAME
+  read -p "Enter extension author's full name: " EXT_AUTHOR_FULLNAME
+  read -p "Enter extension author's email address: " EXT_AUTHOR_EMAIL
+  read -p "Enter site set name: " EXT_SITESET_NAME
+  read -p "Enter site set display label: " EXT_SITESET_LABEL
 
-  mkdir -p "packages/$EXT_NAME/Configuration/TypoScript"
-  mkdir -p "packages/$EXT_NAME/Configuration/TCA/Overrides"
+  mkdir -p "packages/$EXT_NAME/Configuration/Sets/$EXT_SITESET_NAME"
   mkdir -p "packages/$EXT_NAME/Resources"
 
   echo -e "${GREEN}Creating files for extension '$EXT_NAME' with key '$EXT_KEY'...${RESET}"
 
-  # compose.json (extension)
+  # composer.json (extension)
   HOMEPAGE=$(echo "$PROJECT" | tr '[:upper:]' '[:lower:]')
   cat <<EOF >"packages/$EXT_NAME/composer.json"
 {
@@ -90,27 +86,13 @@ if [[ "$CREATE_EXT" =~ ^[Yy]$ ]]; then
 }
 EOF
 
-  # ext_localconf.php
-  echo "<?php
-defined('TYPO3') or die();" >"packages/$EXT_NAME/ext_localconf.php"
+  # Configuration/Sets/EXT_SITESET_NAME/setup.typoscript
+  touch "packages/$EXT_NAME/Configuration/Sets/$EXT_SITESET_NAME/setup.typoscript"
 
-  # ext_tables.sql
-  touch "packages/$EXT_NAME/ext_tables.sql"
-
-  # setup.typoscript
-  touch "packages/$EXT_NAME/Configuration/TypoScript/setup.typoscript"
-
-  # sys_template.php
-  cat <<EOF >"packages/$EXT_NAME/Configuration/TCA/Overrides/sys_template.php"
-<?php
-
-defined('TYPO3') or die();
-
-\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addStaticFile(
-  '$EXT_KEY',
-  'Configuration/Typoscript',
-  '$TS_DISPLAYED_NAME'
-);
+  # Configuration/Sets/EXT_SITESET_NAME/config.yaml
+  cat <<EOF >"packages/$EXT_NAME/Configuration/Sets/$EXT_SITESET_NAME/config.yaml"
+name: $EXT_VENDOR/$EXT_KEY
+label: '$EXT_SITESET_LABEL'
 EOF
 
   echo -e "${YELLOW}Updating main composer.json...${RESET}"
