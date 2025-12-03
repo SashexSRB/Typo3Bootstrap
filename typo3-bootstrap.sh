@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 set -e
 
+# @TODO: Add fulcrum installation
+# @TODO: Add helhum/typo3-console as a necessary dependency and install it
+
 # --- COLORS ---
 GREEN="\033[1;32m"
 YELLOW="\033[1;33m"
@@ -55,6 +58,7 @@ if [[ "$CREATE_EXT" =~ ^[Yy]$ ]]; then
   read -p "Enter extension description: " EXT_DESC
   read -p "Enter extension author's full name: " EXT_AUTHOR_FULLNAME
   read -p "Enter extension author's email address: " EXT_AUTHOR_EMAIL
+  read -p "Enter extension author's website" EXT_AUTHOR_WEBSITE
   read -p "Enter site set name: " EXT_SITESET_NAME
   read -p "Enter site set display label: " EXT_SITESET_LABEL
 
@@ -64,7 +68,6 @@ if [[ "$CREATE_EXT" =~ ^[Yy]$ ]]; then
   echo -e "${GREEN}Creating files for extension '$EXT_NAME' with key '$EXT_KEY'...${RESET}"
 
   # composer.json (extension)
-  HOMEPAGE=$(echo "$PROJECT" | tr '[:upper:]' '[:lower:]')
   cat <<EOF >"packages/$EXT_NAME/composer.json"
 {
   "name": "$EXT_VENDOR/$EXT_NAME",
@@ -74,7 +77,7 @@ if [[ "$CREATE_EXT" =~ ^[Yy]$ ]]; then
     {
       "name": "$EXT_AUTHOR_FULLNAME",
       "email": "$EXT_AUTHOR_EMAIL",
-      "homepage": "https://$HOMEPAGE.ddev.site",
+      "homepage": "https://$EXT_AUTHOR_WEBSITE",
       "role": "creator"
     }
   ],
